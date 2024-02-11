@@ -29,7 +29,7 @@ build:
 
 run:
 	@echo "Running $(APP_NAME)..."
-	$(GO_RUN) $(SRC_DIR)/$(MAIN_FILE)
+	$(SRC_DIR)/$(APP_NAME)
 
 clean:
 	@echo "Cleaning up..."
