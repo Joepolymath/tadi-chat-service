@@ -20,6 +20,9 @@ GO_TEST := $(GO) test
 
 all: build
 
+brun: build
+	$(BUILD_DIR)/$(APP_NAME)
+
 build:
 	@echo "Building $(APP_NAME)..."
 	$(GO_BUILD) -o $(BUILD_DIR)/$(APP_NAME) $(SRC_DIR)
