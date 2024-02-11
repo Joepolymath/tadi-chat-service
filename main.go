@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -22,9 +23,28 @@ var (
 	Version   = "unset" // nolint
 )
 
+// Global vars for .env
+var (
+	mongoURI string
+	baseUrl string
+	userServiceApiKey string
+	env string
+)
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "OK %s %s %s %s", Build, BuildDate, GoVersion, Version)
+}
+
+func init() {
+	viper.SetConfigFile(".env")
+	if err := viper.ReadInConfig(); err != nil {
+        log.Fatalf("Error reading config file: %s", err)
+    }
+
+	 mongoURI = viper.GetString("MONGO_URI")
+	 baseUrl = viper.GetString("BASE_URL")
+
 }
 
 func main() {
@@ -32,11 +52,11 @@ func main() {
 	r.HandleFunc("/", HomeHandler)
 	srv := http.Server{
 		Handler: r,
-		Addr: "0.0.0.0:3004",
+		Addr: baseUrl,
 		WriteTimeout: WriteTimeout * time.Second,
 		ReadTimeout: ReadTimeout * time.Second,
 	}
-	_, err := Connect("mongodb://localhost:27017/tadi")
+	_, err := Connect(mongoURI)
 	if err != nil {
 		log.Fatal(err)
 	}
