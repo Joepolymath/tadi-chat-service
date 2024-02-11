@@ -22,7 +22,7 @@ all: build
 
 build:
 	@echo "Building $(APP_NAME)..."
-	$(GO_BUILD) -o $(BUILD_DIR)/$(APP_NAME) $(SRC_DIR)/$(MAIN_FILE)
+	$(GO_BUILD) -o $(BUILD_DIR)/$(APP_NAME) $(SRC_DIR)
 
 run:
 	@echo "Running $(APP_NAME)..."

@@ -36,5 +36,11 @@ func main() {
 		WriteTimeout: WriteTimeout * time.Second,
 		ReadTimeout: ReadTimeout * time.Second,
 	}
+	conn, err := Connect("mongodb://localhost:27017/tadi")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(conn)
+	log.Printf("Chat Service listening on %s", srv.Addr)
 	log.Fatal(srv.ListenAndServe())
 }
