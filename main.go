@@ -51,7 +51,7 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler)
+	r.HandleFunc(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler).Methods("GET")
 	srv := http.Server{
 		Handler: r,
 		Addr: baseUrl,
