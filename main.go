@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 	"runtime"
+	"tadi-chat-service/configs"
+	"tadi-chat-service/middlewares"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -22,6 +23,7 @@ var (
 	BuildDate = "unset" // nolint
 	GoVersion = runtime.Version() // nolint
 	Version   = "unset" // nolint
+	err error
 )
 
 // Global vars for .env
@@ -31,7 +33,9 @@ var (
 	userServiceApiKey string
 	env string
 	port string
+	envs *configs.EnvsStruct
 )
+
 
 func HomeHandler(c *gin.Context) {
 	data := make(map[string]any)
@@ -43,29 +47,26 @@ func HomeHandler(c *gin.Context) {
 }
 
 func init() {
-	viper.SetConfigFile(".env")
-	if err := viper.ReadInConfig(); err != nil {
-        log.Fatalf("Error reading config file: %s", err)
-    }
-
-	 mongoURI = viper.GetString("MONGO_URI")
-	 baseUrl = viper.GetString("BASE_URL")
-	 port = viper.GetString("PORT")
+	 envs, err = configs.LoadEnv()
+	 if err != nil {
+		log.Fatal(err)
+	 }
 
 }
 
 func main() {
-	// r := mux.NewRouter()
-	// r.HandleFunc(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler).Methods("GET")
 	r := gin.Default()
+	r.Use(middlewares.TokenMiddleware)
+
+	// Endpoints
 	r.GET(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler)
 	
 
 	// connect to db
-	_, err := Connect(mongoURI)
+	_, err := Connect(envs.MongoURI)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r.Run(port)
+	r.Run(envs.Port)
 }
