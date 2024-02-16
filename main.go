@@ -5,9 +5,8 @@ import (
 	"log"
 	"net/http"
 	"runtime"
-	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
 
@@ -31,11 +30,16 @@ var (
 	baseUrl string
 	userServiceApiKey string
 	env string
+	port string
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "OK %s %s %s %s", Build, BuildDate, GoVersion, Version)
+func HomeHandler(c *gin.Context) {
+	data := make(map[string]any)
+	data["Build"] = Build
+	data["BuildDate"] = BuildDate
+	data["GoVersion"] = GoVersion
+	data["Version"] = Version
+	c.JSON(http.StatusOK, gin.H{"status": "success", "data": data})
 }
 
 func init() {
@@ -46,18 +50,16 @@ func init() {
 
 	 mongoURI = viper.GetString("MONGO_URI")
 	 baseUrl = viper.GetString("BASE_URL")
+	 port = viper.GetString("PORT")
 
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler).Methods("GET")
-	srv := http.Server{
-		Handler: r,
-		Addr: baseUrl,
-		WriteTimeout: WriteTimeout * time.Second,
-		ReadTimeout: ReadTimeout * time.Second,
-	}
+	// r := mux.NewRouter()
+	// r.HandleFunc(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler).Methods("GET")
+	r := gin.Default()
+	r.GET(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler)
+	
 
 	// connect to db
 	_, err := Connect(mongoURI)
@@ -65,9 +67,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("Chat Service listening on %s", srv.Addr)
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
+	r.Run(port)
 }
