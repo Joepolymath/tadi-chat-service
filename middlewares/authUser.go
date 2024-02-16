@@ -1,7 +1,9 @@
 package middlewares
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"tadi-chat-service/configs"
 
@@ -35,6 +37,24 @@ func TokenMiddleware(c *gin.Context) {
 		return
 	 }
 
+	 body, err := io.ReadAll(resp.Body)
+	 if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	 }
 
+	 var data struct {
+		Data interface{}		`json:"data"`
+		Status string	`json:"status"`
+		StatusCode int	`json:"statusCode"`
+	 }
+
+	 if err := json.Unmarshal(body, &data); err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	 }
+
+	 c.Set("User", data.Data)
+	//  c.Set("User", resp.Body)
     c.Next()
 }

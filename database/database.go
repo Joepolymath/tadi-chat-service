@@ -12,7 +12,7 @@ import (
 )
 
 
-type Model struct {
+type Model[T any] struct {
  ID        primitive.ObjectID `bson:"_id,omitempty"`
  CreatedAt time.Time          `bson:"created_at"`
  UpdatedAt time.Time          `bson:"updated_at"`
@@ -39,7 +39,7 @@ func Connect(uri string) (*mongo.Client, error) {
 }
 
 
-func (m *Model) Create(ctx context.Context, db *mongo.Database, collectionName string, model interface{}) error {
+func (m *Model[T]) Create(ctx context.Context, db *mongo.Database, collectionName string, model interface{}) error {
  collection := db.Collection(collectionName)
 
  m.CreatedAt = time.Now()
@@ -54,7 +54,7 @@ func (m *Model) Create(ctx context.Context, db *mongo.Database, collectionName s
  return nil
 }
 
-func (m *Model) Read(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}, result interface{}) error {
+func (m *Model[T]) Read(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}, result interface{}) error {
  collection := db.Collection(collectionName)
 
  err := collection.FindOne(ctx, filter).Decode(result)
@@ -65,7 +65,28 @@ func (m *Model) Read(ctx context.Context, db *mongo.Database, collectionName str
  return nil
 }
 
-func (m *Model) Update(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}, update interface{}) error {
+func (m *Model[T]) ReadMany(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}, result *[]T) error {
+ collection := db.Collection(collectionName)
+
+ cursor, err := collection.Find(ctx, filter)
+ if err != nil {
+  return err
+ }
+ defer cursor.Close(ctx)
+
+ for cursor.Next(ctx) {
+  var document T
+  if err := cursor.Decode(&document); err != nil {
+    return err
+  }
+
+  *result = append(*result, document)
+ }
+
+ return nil
+}
+
+func (m *Model[T]) Update(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}, update interface{}) error {
  collection := db.Collection(collectionName)
 
  m.UpdatedAt = time.Now()
@@ -78,7 +99,7 @@ func (m *Model) Update(ctx context.Context, db *mongo.Database, collectionName s
 return nil
 }
 
-func (m *Model) Delete(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}) error {
+func (m *Model[T]) Delete(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}) error {
   collection := db.Collection(collectionName)
   _, err := collection.DeleteOne(ctx, filter)
   if err != nil {

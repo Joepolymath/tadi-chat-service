@@ -65,6 +65,7 @@ func main() {
 	// Endpoints
 	r.GET(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler)
 	r.POST(ServicePrefix + "/groups", endpoints.CreateGroupchat)
+	r.GET(ServicePrefix, endpoints.FetchChats)
 
 	// connect to db
 	client, err := database.Connect(envs.MongoURI)
