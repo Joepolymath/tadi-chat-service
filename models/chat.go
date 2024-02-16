@@ -6,7 +6,7 @@ import "time"
 type Chat struct {
 	ChatName      string    `bson:"chatName" json:"chatName"`
 	IsGroupChat   bool      `bson:"isGroupChat" json:"isGroupChat"`
-	Users         []User  `bson:"users" json:"users"`
+	Users         []string  `bson:"users" json:"users"`
 	GroupAdmin    string    `bson:"groupAdmin" json:"groupAdmin"`
 	Timestamps    time.Time `bson:"timestamps" json:"timestamps"`
 }

@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"runtime"
 	"tadi-chat-service/configs"
+	"tadi-chat-service/database"
+	"tadi-chat-service/endpoints"
 	"tadi-chat-service/middlewares"
 
 	"github.com/gin-gonic/gin"
@@ -55,18 +58,20 @@ func init() {
 }
 
 func main() {
+	ctx := context.Background()
 	r := gin.Default()
 	r.Use(middlewares.TokenMiddleware)
 
 	// Endpoints
 	r.GET(fmt.Sprintf("%s/health", ServicePrefix), HomeHandler)
-	
+	r.POST(ServicePrefix + "/groups", endpoints.CreateGroupchat)
 
 	// connect to db
-	_, err := Connect(envs.MongoURI)
+	client, err := database.Connect(envs.MongoURI)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer client.Disconnect(ctx)
 
 	r.Run(envs.Port)
 }
