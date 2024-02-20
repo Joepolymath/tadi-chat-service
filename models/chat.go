@@ -12,7 +12,7 @@ type Chat struct {
 	IsGroupChat bool      `bson:"isGroupChat" json:"isGroupChat"`
 	UsersIds       []primitive.ObjectID  `bson:"usersIds" json:"usersIds"`
 	Users       []*User  `bson:"users" json:"users"`
-	GroupAdmins  []primitive.ObjectID    `bson:"groupAdmin" json:"groupAdmin"`
+	GroupAdmins  []primitive.ObjectID    `bson:"groupAdmins" json:"groupAdmin"`
 	CreatedAt  time.Time `bson:"createdAt" json:"createdAt"`
 	UpdatedAt  time.Time `bson:"updatedAt" json:"updatedAt"`
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	dataaccess "tadi-chat-service/dataAccess"
 	"tadi-chat-service/database"
 	"tadi-chat-service/models"
 	"time"
@@ -57,8 +58,6 @@ func CreateGroupchat(c *gin.Context) {
 	 requestBody.IsGroupChat = true
     // Process the group chat request
 
-	 model := &database.Model[models.Chat]{}
-
 	 now := time.Now()
 	 groupChat := &models.Chat{
 		ChatName: requestBody.ChatName,
@@ -68,7 +67,7 @@ func CreateGroupchat(c *gin.Context) {
 		UpdatedAt: now,
 	 }
 
-	 insertedData, err := model.Create(ctx, database.Client.Database("tadi"), "chats", groupChat)
+	 insertedData, err := dataaccess.CreateChat(groupChat)
 	 if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"status": "failure", "message": "Unable to create group chat"})
 		return
@@ -82,23 +81,22 @@ func CreateGroupchat(c *gin.Context) {
 		return
 	}
 	 
-	 chatUserModel := &database.Model[models.ChatUsers]{}
+
 	 chatUser := &models.ChatUsers{
 		ChatID: id,
 		UserID: userObjectId,
 		IsAdmin: true,
 	 }
 
-	 _, err = chatUserModel.Create(ctx, database.Client.Database("tadi"), "chatusers", chatUser)
+	 _, err = dataaccess.CreateChatUser(chatUser)
 	 if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"status": "failure", "message": "Unable to add chat_user"})
 		return
 	 }
 
-	 userModel := &database.Model[models.User]{}
 	 userUpdate := bson.M{"$set": bson.M{"lastSeen": time.Now()}}
 
-	 err = userModel.Update(ctx, database.Client.Database("tadi"), "users", bson.M{"_id": userObjectId}, userUpdate)
+	 err = dataaccess.UpdateUser( bson.M{"_id": userObjectId}, userUpdate)
 	 if err != nil {
 		fmt.Println(err.Error())
 	 }
