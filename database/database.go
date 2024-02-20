@@ -39,7 +39,7 @@ func Connect(uri string) (*mongo.Client, error) {
 }
 
 
-func (m *Model[T]) Create(ctx context.Context, db *mongo.Database, collectionName string, model interface{}) error {
+func (m *Model[T]) Create(ctx context.Context, db *mongo.Database, collectionName string, model interface{}) (*mongo.InsertOneResult, error) {
  collection := db.Collection(collectionName)
 
  m.CreatedAt = time.Now()
@@ -47,11 +47,11 @@ func (m *Model[T]) Create(ctx context.Context, db *mongo.Database, collectionNam
 
  res, err := collection.InsertOne(ctx, model)
  if err != nil {
-  return err
+  return nil, err
  }
 
  m.ID = res.InsertedID.(primitive.ObjectID)
- return nil
+ return res, nil
 }
 
 func (m *Model[T]) Read(ctx context.Context, db *mongo.Database, collectionName string, filter interface{}, result interface{}) error {

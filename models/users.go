@@ -21,4 +21,5 @@ type User struct {
 	CreatedAt      time.Time `bson:"createdAt" json:"createdAt"`
 	UpdatedAt      time.Time `bson:"updatedAt" json:"updatedAt"`
 	FlaggedIP      string    `bson:"flaggedIp" json:"flaggedIp"`
+	LastSeen      time.Time    `bson:"lastSeen" json:"lastSeen"`
 }
