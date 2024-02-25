@@ -13,6 +13,7 @@ type Chat struct {
 	UsersIds       []primitive.ObjectID  `bson:"usersIds" json:"usersIds"`
 	Users       []*User  `bson:"users" json:"users"`
 	GroupAdmins  []primitive.ObjectID    `bson:"groupAdmins" json:"groupAdmin"`
+	LastMessage *Message		`bson:"lastMessage" json:"lastMessage"`
 	CreatedAt  time.Time `bson:"createdAt" json:"createdAt"`
 	UpdatedAt  time.Time `bson:"updatedAt" json:"updatedAt"`
 }
