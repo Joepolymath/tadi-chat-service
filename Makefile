@@ -3,10 +3,10 @@
 # Variables
 APP_NAME := app
 SRC_DIR := .
-BUILD_DIR := .
+BUILD_DIR := ./build
 BIN_DIR := bin
 PKG_DIR := pkg
-MAIN_FILE := main.go
+MAIN_FILE := ./cmd/main.go
 
 # Commands
 GO := go

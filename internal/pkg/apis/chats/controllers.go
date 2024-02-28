@@ -4,9 +4,11 @@ import (
 	"context"
 	"net/http"
 	"tadi-chat-service/internal/pkg/models"
+	"tadi-chat-service/internal/utils"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ChatsController struct {
@@ -40,9 +42,21 @@ func (controller *ChatsController) CreateGroupChat(c *gin.Context) {
 
 	 now := time.Now()
 
-	 payload := &models.Chat{
+	 //  convert users strings to objectIds
+	 usersIds := make([]primitive.ObjectID, 0, len(requestBody.Users))
+	for _, id := range(requestBody.Users) {
+		objId, err := utils.ConvertStringToObjId(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user id in the users array"})
+        return
+		}
+		usersIds = append(usersIds, *objId)
+	}
+
+	payload := &models.Chat{
 		ChatName: requestBody.ChatName,
 		IsGroupChat: true,
+		UsersIds: usersIds,
 		CreatedAt: now,
 		UpdatedAt: now,
 	 }
