@@ -72,3 +72,32 @@ func (controller *ChatsController) CreateGroupChat(c *gin.Context) {
 }
 
 func (controller *ChatsController) FetchChats(c *gin.Context) {}
+
+// fetching chats for authenticated user
+// func FetchChats(c *gin.Context) {
+// 	user, found := c.Get("User")
+// 	if !found {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"status": "failure", "message": "Could not fetch user details"})
+// 		return
+// 	}
+
+// 	userData, ok := user.(map[string]interface{})
+// 	if !ok {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"status": "failure", "message": "Could not fetch user details"})
+// 		return
+// 	}
+
+// 	filter := bson.M{"users": bson.M{"$elemMatch": bson.M{"$eq": userData["_id"]}}}
+
+// 	model := &database.Model[models.Chat]{}
+// 	var fetchedChats []models.Chat
+
+// 	err := model.ReadMany(ctx, database.Client.Database("tadi"), "chats", filter, &fetchedChats)
+// 	if err != nil {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"status": "failure", "message": "Could not fetch chats"})
+// 		return
+// 	}
+
+
+// 	c.JSON(http.StatusOK, fetchedChats)
+// }

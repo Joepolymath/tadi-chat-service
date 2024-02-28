@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"runtime"
 	"tadi-chat-service/configs"
-	"tadi-chat-service/database"
+	"tadi-chat-service/internal/database"
 	"tadi-chat-service/middlewares"
 	"tadi-chat-service/setup"
 

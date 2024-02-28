@@ -25,7 +25,7 @@ brun: build
 
 build:
 	@echo "Building $(APP_NAME)..."
-	$(GO_BUILD) -o $(BUILD_DIR)/$(APP_NAME) $(SRC_DIR)
+	$(GO_BUILD) -o $(BUILD_DIR)/$(APP_NAME) $(MAIN_FILE)
 
 run:
 	@echo "Running $(APP_NAME)..."
